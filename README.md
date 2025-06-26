@@ -24,26 +24,15 @@ Descreva os pré-requisitos para rodar o seu projeto e os comandos necessários.
 
 1. Clone este repositório:
    ```bash
-   
+   git clone https://github.com/projeto-de-algoritmos-2025/D-C_mediamaster.git
+
    ```
-2. Antes de rodar o projeto, instale as dependências necessárias utilizando o seguinte comando: 
-    ```bash
-   
-   ```
-3.Acesse o diretório do Projeto:   
-```bash
-   
-   ```
-4.Execute o arquivo principal:
+2.Execute o arquivo principal:
    ```bash
-   
+   python3 jogo.py ou python jogo.py
    ```
-    
 
 ## Uso 
-
-
-## Outros 
 
 ### Como Funciona
 
