@@ -51,5 +51,65 @@ class MedianMasterApp:
 
         self.label_tempo = tk.Label(master, text="⏱️ Tempo restante: --", font=("Helvetica", 12, "bold"))
         self.label_tempo.pack()
+    
+    def ajustar_dificuldade(self):
+        dificuldade = self.dificuldade_var.get()
+        if dificuldade == "Fácil":
+            self.tamanho_grupo = 5
+            self.total_numeros = 25
+        elif dificuldade == "Médio":
+            self.tamanho_grupo = 7
+            self.total_numeros = 49
+        else:
+            self.tamanho_grupo = 9
+            self.total_numeros = 81
+
+    def iniciar_timer(self):
+        self.start_time = time.time()
+        self.atualizar_timer()
+
+    def atualizar_timer(self):
+        tempo_passado = int(time.time() - self.start_time)
+        tempo_restante = self.tempo_limite - tempo_passado
+        self.label_tempo.config(text=f"⏱️ Tempo restante: {tempo_restante}s")
+        if tempo_restante <= 0:
+            self.label_tempo.config(text="⏱️ Tempo esgotado!")
+            messagebox.showwarning("Tempo!", "⏰ O tempo acabou!")
+            self.verificar_resposta(timeout=True)
+        else:
+            self.timer_id = self.master.after(1000, self.atualizar_timer)
+
+    def nova_rodada(self):
+        if self.rodadas >= self.max_rodadas:
+            messagebox.showinfo("Fim de Jogo", f"🏁 Você completou {self.max_rodadas} rodadas.\nPontuação final: {self.pontos}")
+            self.master.quit()
+            return
+
+        self.ajustar_dificuldade()
+        self.rodadas += 1
+        self.entry.delete(0, tk.END)
+        self.text_area.delete("1.0", tk.END)
+
+        self.lista = random.sample(range(1, 200), self.total_numeros)
+        self.grupos = dividir_em_grupos(self.lista, self.tamanho_grupo)
+        self.medianas = [mediana_manual(g) for g in self.grupos]
+        self.resposta_correta = mediana_manual(self.medianas)
+
+        self.text_area.insert(tk.END, f"🎯 Rodada {self.rodadas}/{self.max_rodadas} - Dificuldade: {self.dificuldade_var.get()}\n\n")
+        self.text_area.insert(tk.END, "📊 Lista completa:\n")
+        self.text_area.insert(tk.END, f"{self.lista}\n\n")
+
+        for i, g in enumerate(self.grupos):
+            self.text_area.insert(tk.END, f"Grupo {i+1}: {g} → Mediana: {mediana_manual(g)}\n")
+
+        self.text_area.insert(tk.END, f"\n🧮 Medianas: {self.medianas}")
+        self.text_area.insert(tk.END, f"\n\n👉 Digite abaixo qual é a *Mediana das Medianas*:")
+
+        if self.timer_id:
+            self.master.after_cancel(self.timer_id)
+
+        self.iniciar_timer()
+
+
 
   
