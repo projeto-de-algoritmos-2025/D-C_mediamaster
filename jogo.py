@@ -51,7 +51,7 @@ class MedianMasterApp:
 
         self.label_tempo = tk.Label(master, text="⏱️ Tempo restante: --", font=("Helvetica", 12, "bold"))
         self.label_tempo.pack()
-    
+
     def ajustar_dificuldade(self):
         dificuldade = self.dificuldade_var.get()
         if dificuldade == "Fácil":
@@ -103,13 +103,35 @@ class MedianMasterApp:
             self.text_area.insert(tk.END, f"Grupo {i+1}: {g} → Mediana: {mediana_manual(g)}\n")
 
         self.text_area.insert(tk.END, f"\n🧮 Medianas: {self.medianas}")
-        self.text_area.insert(tk.END, f"\n\n👉 Digite abaixo qual é a *Mediana das Medianas*:")
+        self.text_area.insert(tk.END, f"\n\n👉 Digite abaixo qual é a **Mediana das Medianas**:")
 
         if self.timer_id:
             self.master.after_cancel(self.timer_id)
 
         self.iniciar_timer()
 
+    def verificar_resposta(self, timeout=False):
+        if self.timer_id:
+            self.master.after_cancel(self.timer_id)
 
+        tempo_usado = int(time.time() - self.start_time)
+        try:
+            if timeout:
+                raise ValueError("Tempo esgotado")
+            resposta = int(self.entry.get())
+            if resposta == self.resposta_correta:
+                pontos_ganhos = max(1, self.tempo_limite - tempo_usado)
+                self.pontos += pontos_ganhos
+                messagebox.showinfo("Correto!", f"✅ Parabéns! Você acertou!\n⏱️ Tempo: {tempo_usado}s\n+{pontos_ganhos} pontos!")
+            else:
+                messagebox.showerror("Errado!", f"❌ A resposta era {self.resposta_correta}.")
+        except:
+            messagebox.showerror("Erro", f"❌ Resposta incorreta ou tempo esgotado.\nA resposta certa era {self.resposta_correta}.")
 
-  
+        self.label_pontos.config(text=f"Pontos: {self.pontos}")
+        self.nova_rodada()
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = MedianMasterApp(root)
+    root.mainloop()
